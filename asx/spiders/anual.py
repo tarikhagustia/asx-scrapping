@@ -5,19 +5,18 @@ import csv
 from selenium import webdriver
 import re
 
-import os
-from selenium.webdriver.common.keys import Keys
-
-# "$ xvfb-run python test.py", this is how you run this script
-chrome_options = webdriver.ChromeOptions()
+chromeOptions = webdriver.ChromeOptions()
+prefs = {'profile.managed_default_content_settings.images':2}
+chromeOptions.add_experimental_option("prefs", prefs)
 
 class AnualSpider(scrapy.Spider):
     name = 'anual'
     allowed_domains = ['asx.com.au']
-    limit = 5
+    limit = 20
+    rotate_user_agent = True
 
     def __init__(self):
-        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+        self.driver = webdriver.Chrome(chrome_options=chromeOptions)
 
     def start_requests(self):
         #  Download CSV file

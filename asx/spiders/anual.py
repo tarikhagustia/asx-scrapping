@@ -10,17 +10,11 @@ from selenium.webdriver.common.keys import Keys
 
 # "$ xvfb-run python test.py", this is how you run this script
 chrome_options = webdriver.ChromeOptions()
-# below trick saved my life
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--headless')
-# set the folder where you want to save your file
-prefs = {'download.default_directory' : os.getcwd()}
-chrome_options.add_experimental_option('prefs', prefs)
 
 class AnualSpider(scrapy.Spider):
     name = 'anual'
     allowed_domains = ['asx.com.au']
-    limit = 2
+    limit = 5
 
     def __init__(self):
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
@@ -200,7 +194,7 @@ class AnualSpider(scrapy.Spider):
 
             response.meta['json'][response.meta['code']]['annountcements'] = items;
 
-            yield response.meta['json']
+        yield response.meta['json']
 
 
     def parse_announcement_file(self, response):

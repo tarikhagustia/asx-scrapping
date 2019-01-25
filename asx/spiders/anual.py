@@ -9,7 +9,7 @@ import re
 class AnualSpider(scrapy.Spider):
     name = 'anual'
     allowed_domains = ['asx.com.au']
-    limit = 20
+    limit = 2
 
     def __init__(self):
         self.driver = webdriver.Chrome()
@@ -156,16 +156,48 @@ class AnualSpider(scrapy.Spider):
         yield request
 
     def parse_announcement(self, response):
-        row = response.xpath('//announcement_data/table/tbody//tr')
+        self.driver.get(response.url)
+        row = self.driver.find_elements_by_xpath('//announcement_data/table/tbody//tr')
+        self.log(row)
+
         items = []
         for i in row:
-            re.sub(r"\s+", " ", i.xpath('td[1]//text()').extract_first())
-            items.append({
-                "date": re.sub(r"\s+", " ", i.xpath('td[1]//text()').extract_first()),
-                "time": i.xpath('td[1]/span//text()').extract_first(),
-                "subject": re.sub(r"\s+", " ", i.xpath('td[3]/a//text()').extract_first()),
-                "link": 'https://www.asx.com.au' + str(i.xpath('td[3]/a/@href').extract_first())
-            })
-        response.meta['json'][response.meta['code']]['annountcements'] = items;
+            i.find_element_by_xpath('td[3]/a').click()
+            date = re.sub(r"\s+", " ", i.find_element_by_xpath('td[1]').text);
+            time = i.find_element_by_xpath('td[1]/span').text
+            subject = re.sub(r"\s+", " ", i.find_element_by_xpath('td[3]/a').text)
 
-        yield response.meta['json']
+            self.driver.switch_to.window(self.driver.window_handles[-1])
+            # check if submit agreement
+            if ".pdf" in self.driver.current_url:
+                items.append({
+                    "date": date,
+                    "time": time,
+                    "subject": subject,
+                    "link": self.driver.current_url
+                })
+            else:
+                self.driver.find_element_by_name('showAnnouncementPDFForm').submit()
+                items.append({
+                    "date": date,
+                    "time": time,
+                    "subject": subject,
+                    "link": self.driver.current_url
+                })
+            self.driver.close()
+            self.driver.switch_to.window(self.driver.window_handles[0])
+
+            response.meta['json'][response.meta['code']]['annountcements'] = items;
+
+            yield response.meta['json']
+
+
+    def parse_announcement_file(self, response):
+        pass
+# re.sub(r"\s+", " ", i.xpath('td[1]//text()').extract_first())
+# items.append({
+#     "date": re.sub(r"\s+", " ", i.xpath('td[1]//text()').extract_first()),
+#     "time": i.xpath('td[1]/span//text()').extract_first(),
+#     "subject": re.sub(r"\s+", " ", i.xpath('td[3]/a//text()').extract_first()),
+#     "link": 'https://www.asx.com.au' + str(i.xpath('td[3]/a/@href').extract_first())
+# })

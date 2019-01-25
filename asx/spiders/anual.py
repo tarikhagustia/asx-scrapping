@@ -5,6 +5,17 @@ import csv
 from selenium import webdriver
 import re
 
+import os
+from selenium.webdriver.common.keys import Keys
+
+# "$ xvfb-run python test.py", this is how you run this script
+chrome_options = webdriver.ChromeOptions()
+# below trick saved my life
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--headless')
+# set the folder where you want to save your file
+prefs = {'download.default_directory' : os.getcwd()}
+chrome_options.add_experimental_option('prefs', prefs)
 
 class AnualSpider(scrapy.Spider):
     name = 'anual'
@@ -12,7 +23,7 @@ class AnualSpider(scrapy.Spider):
     limit = 2
 
     def __init__(self):
-        self.driver = webdriver.Chrome()
+        self.driver = webdriver.Chrome(chrome_options=chrome_options)
 
     def start_requests(self):
         #  Download CSV file

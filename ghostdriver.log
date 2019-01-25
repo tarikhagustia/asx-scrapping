@@ -1,0 +1,44 @@
+[INFO  - 2019-01-25T12:52:36.485Z] GhostDriver - Main - running on port 61606
+[INFO  - 2019-01-25T12:52:40.972Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1","webSecurityEnabled":true}
+[INFO  - 2019-01-25T12:52:40.972Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.customHeaders:  - {}
+[INFO  - 2019-01-25T12:52:40.973Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.1.1","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"windows-10-32bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
+[INFO  - 2019-01-25T12:52:40.973Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: 19b52970-20a0-11e9-bab8-3db50bf6853a
+[ERROR - 2019-01-25T12:52:46.456Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - msg: ReferenceError: Can't find variable: DJ
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:46.457Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - stack:
+  global code (https://www.asx.com.au/app/ci/js/combined.app.8c319a73.js:4)
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:48.739Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - msg: SyntaxError: DOM Exception 12: An invalid or illegal string was specified.
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:48.739Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - stack:
+  postMessage (https://cdn.digitru.st/prod/1.5.21/dt.html:114)
+  (anonymous function) (https://cdn.digitru.st/prod/1.5.21/dt.html:114)
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:48.742Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - msg: SyntaxError: DOM Exception 12: An invalid or illegal string was specified.
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:48.742Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - stack:
+  postMessage (https://cdn.digitru.st/prod/1.5.21/dt.html:114)
+  (anonymous function) (https://cdn.digitru.st/prod/1.5.21/dt.html:114)
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:58.578Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - msg: Error: [DigiTrust Iframe Error] Client could not connect to the iframe
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:58.578Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - stack:
+  (anonymous function) (https://cdn.digitru.st/prod/1/digitrust.min.js:1)
+  (anonymous function) (https://cdn.digitru.st/prod/1/digitrust.min.js:1)
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:58.580Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - msg: Error: [DigiTrust Iframe Error] Client could not connect to the iframe
+
+  phantomjs://platform/console++.js:263 in error
+[ERROR - 2019-01-25T12:52:58.580Z] Session [19b52970-20a0-11e9-bab8-3db50bf6853a] - page.onError - stack:
+  (anonymous function) (https://cdn.digitru.st/prod/1/digitrust.min.js:1)
+  (anonymous function) (https://cdn.digitru.st/prod/1/digitrust.min.js:1)
+
+  phantomjs://platform/console++.js:263 in error

@@ -6,13 +6,14 @@ from selenium import webdriver
 import re
 
 chromeOptions = webdriver.ChromeOptions()
-prefs = {'profile.managed_default_content_settings.images':2}
+prefs = {'profile.managed_default_content_settings.images': 2}
 chromeOptions.add_experimental_option("prefs", prefs)
+
 
 class AnualSpider(scrapy.Spider):
     name = 'anual'
     allowed_domains = ['asx.com.au']
-    limit = 20
+    limit = 5
     rotate_user_agent = True
 
     def __init__(self):
@@ -75,23 +76,19 @@ class AnualSpider(scrapy.Spider):
         }
         # Anual PDF
 
-
         try:
             self.driver.find_element_by_xpath('//div[@ng-show="annual_reports.length > 0"]/ul/li/a').click()
-            windows = self.driver.window_handles
-            if len(windows) > 2:
-                self.driver.switch_to.window(windows[2])
+            self.driver.switch_to.window(self.driver.window_handles[-1])
 
-                # check if submit agreement
-                if ".pdf" in self.driver.current_url:
-                    json[response.meta['code']]['summary']['annual_pdf_link'] = self.driver.current_url;
-                else:
-                    self.driver.find_element_by_name('showAnnouncementPDFForm').submit()
-                    json[response.meta['code']]['summary']['annual_pdf_link'] = self.driver.current_url;
+            # check if submit agreement
+            if ".pdf" in self.driver.current_url:
+                json[response.meta['code']]['summary']['annual_pdf_link'] = self.driver.current_url;
+            else:
+                self.driver.find_element_by_name('showAnnouncementPDFForm').submit()
+                json[response.meta['code']]['summary']['annual_pdf_link'] = self.driver.current_url;
 
-                self.driver.close()
-
-            self.driver.switch_to.window(windows[0])
+            self.driver.close()
+            self.driver.switch_to.window(self.driver.window_handles[0])
         except:
             windows = self.driver.window_handles
             json[response.meta['code']]['summary']['annual_pdf_link'] = None;
@@ -194,14 +191,3 @@ class AnualSpider(scrapy.Spider):
             response.meta['json'][response.meta['code']]['annountcements'] = items;
 
         yield response.meta['json']
-
-
-    def parse_announcement_file(self, response):
-        pass
-# re.sub(r"\s+", " ", i.xpath('td[1]//text()').extract_first())
-# items.append({
-#     "date": re.sub(r"\s+", " ", i.xpath('td[1]//text()').extract_first()),
-#     "time": i.xpath('td[1]/span//text()').extract_first(),
-#     "subject": re.sub(r"\s+", " ", i.xpath('td[3]/a//text()').extract_first()),
-#     "link": 'https://www.asx.com.au' + str(i.xpath('td[3]/a/@href').extract_first())
-# })

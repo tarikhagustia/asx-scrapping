@@ -1,0 +1,2 @@
+2019-01-27 19:12:20 [anual] ERROR: Error while get summary for company : MOQ
+    qqqqqqq`1q1q1qqqqqqqqq2`

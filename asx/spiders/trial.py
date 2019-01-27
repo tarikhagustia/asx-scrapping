@@ -10,7 +10,7 @@ from scrapy.spiders import CrawlSpider
 class TrialSpider(scrapy.Spider):
     name = 'trial'
     # Limit test records
-    limit = 20
+    limit = 2
 
     def start_requests(self):
         #  Download CSV file

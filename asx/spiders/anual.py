@@ -2,7 +2,7 @@
 import scrapy
 import scrapy_splash
 import csv
-from selenium import webdriver
+from selenium import webdriver, common
 import re
 
 chromeOptions = webdriver.ChromeOptions()
@@ -13,7 +13,7 @@ chromeOptions.add_experimental_option("prefs", prefs)
 class AnualSpider(scrapy.Spider):
     name = 'anual'
     allowed_domains = ['asx.com.au']
-    limit = 5
+    limit = 2
     rotate_user_agent = True
 
     def __init__(self):
@@ -56,24 +56,34 @@ class AnualSpider(scrapy.Spider):
     def parse_price(self, response):
         self.driver.get(response.url)
         json = {}
-        json[response.meta['code']] = {
-            "summary": {
-                "Summary_Value": self.driver.find_element_by_xpath('//span[@ng-show="share.last_price"]').text,
-                "market_cap": self.driver.find_element_by_xpath('//div[@ng-switch="share.market_cap"]/span').text,
-                "dividens": {
-                    "most_recent": self.driver.find_element_by_xpath(
-                        '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[1]/td[2]/span[1]').text,
-                    "Dividend ex-date": self.driver.find_element_by_xpath(
-                        '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[2]/td[2]').text,
-                    "Dividend pay date": self.driver.find_element_by_xpath(
-                        '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[3]/td[2]').text,
-                    "Franking": self.driver.find_element_by_xpath(
-                        '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[4]/td[2]').text,
-                    "Annual dividend yield": self.driver.find_element_by_xpath(
-                        '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[5]/td[2]/span[1]').text,
-                },
+
+        try:
+            json[response.meta['code']] = {
+                "summary": {
+                    "Summary_Value": self.driver.find_element_by_xpath('//span[@ng-show="share.last_price"]').text,
+                    "market_cap": self.driver.find_element_by_xpath('//div[@ng-switch="share.market_cap"]/span').text,
+                    "dividens": {
+                        "most_recent": self.driver.find_element_by_xpath(
+                            '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[1]/td[2]/span[1]').text,
+                        "Dividend ex-date": self.driver.find_element_by_xpath(
+                            '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[2]/td[2]').text,
+                        "Dividend pay date": self.driver.find_element_by_xpath(
+                            '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[3]/td[2]').text,
+                        "Franking": self.driver.find_element_by_xpath(
+                            '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[4]/td[2]').text,
+                        "Annual dividend yield": self.driver.find_element_by_xpath(
+                            '//company-summary/table/tbody/tr[3]/td[2]/table/tbody/tr[5]/td[2]/span[1]').text,
+                    },
+                }
             }
-        }
+        except:
+            self.logger.error('Error while get summary for company : ' + response.meta['code'])
+            json[response.meta['code']] = {
+                "summary": {
+
+                }
+            }
+
         # Anual PDF
 
         try:
@@ -107,43 +117,47 @@ class AnualSpider(scrapy.Spider):
     def parse_statistic(self, response):
         self.driver.get(response.url)
 
-        response.meta['json'][response.meta['code']]['statistic'] = {
-            "day": {
-                "open": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[3]/td[2]/span').text,
-                "day_high": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[4]/td[2]/span').text,
-                "day_low": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[5]/td[2]/span').text,
-                "Daily volume": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[6]/td[2]/span').text,
-                "Bid": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[7]/td[2]/span').text,
-                "Offer": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[8]/td[2]/span').text,
-                "Number of shares": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[9]/td[2]/span').text,
-            },
-            "year": {
-                "previouse_close": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[3]/td[4]/span').text,
-                "52_week_high": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[4]/td[4]/span').text,
-                "52 week low": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[5]/td[4]/span').text,
-                "Average volume": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[6]/td[4]/span').text,
-            },
-            "ratios": {
-                "p/e": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[3]/td[6]/span').text,
-                "eps": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[4]/td[6]/span').text,
-                "Annual dividend yield ": self.driver.find_element_by_xpath(
-                    '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[5]/td[6]/span').text,
-            }
+        try:
+            response.meta['json'][response.meta['code']]['statistic'] = {
+                "day": {
+                    "open": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[3]/td[2]/span').text,
+                    "day_high": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[4]/td[2]/span').text,
+                    "day_low": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[5]/td[2]/span').text,
+                    "Daily volume": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[6]/td[2]/span').text,
+                    "Bid": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[7]/td[2]/span').text,
+                    "Offer": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[8]/td[2]/span').text,
+                    "Number of shares": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[9]/td[2]/span').text,
+                },
+                "year": {
+                    "previouse_close": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[3]/td[4]/span').text,
+                    "52_week_high": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[4]/td[4]/span').text,
+                    "52 week low": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[5]/td[4]/span').text,
+                    "Average volume": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[6]/td[4]/span').text,
+                },
+                "ratios": {
+                    "p/e": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[3]/td[6]/span').text,
+                    "eps": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[4]/td[6]/span').text,
+                    "Annual dividend yield ": self.driver.find_element_by_xpath(
+                        '/html/body/section[3]/article/div[1]/div/div/div[4]/div/div[3]/table/tbody/tr[5]/td[6]/span').text,
+                }
 
-        }
+            }
+        except:
+            self.logger.error('Error while get statistic for company : ' + response.meta['code'])
+            response.meta['json'][response.meta['code']]['statistic'] = dict()
 
         json = response.meta['json']
 
@@ -163,30 +177,34 @@ class AnualSpider(scrapy.Spider):
 
         items = []
         for i in row:
-            i.find_element_by_xpath('td[3]/a').click()
-            date = re.sub(r"\s+", " ", i.find_element_by_xpath('td[1]').text);
-            time = i.find_element_by_xpath('td[1]/span').text
-            subject = re.sub(r"\s+", " ", i.find_element_by_xpath('td[3]/a').text)
+            try:
+                i.find_element_by_xpath('td[3]/a').click()
+                date = re.sub(r"\s+", " ", i.find_element_by_xpath('td[1]').text);
+                time = i.find_element_by_xpath('td[1]/span').text
+                subject = re.sub(r"\s+", " ", i.find_element_by_xpath('td[3]/a').text)
 
-            self.driver.switch_to.window(self.driver.window_handles[-1])
-            # check if submit agreement
-            if ".pdf" in self.driver.current_url:
-                items.append({
-                    "date": date,
-                    "time": time,
-                    "subject": subject,
-                    "link": self.driver.current_url
-                })
-            else:
-                self.driver.find_element_by_name('showAnnouncementPDFForm').submit()
-                items.append({
-                    "date": date,
-                    "time": time,
-                    "subject": subject,
-                    "link": self.driver.current_url
-                })
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])
+                self.driver.switch_to.window(self.driver.window_handles[-1])
+                # check if submit agreement
+                if ".pdf" in self.driver.current_url:
+                    items.append({
+                        "date": date,
+                        "time": time,
+                        "subject": subject,
+                        "link": self.driver.current_url
+                    })
+                else:
+                    self.driver.find_element_by_name('showAnnouncementPDFForm').submit()
+                    items.append({
+                        "date": date,
+                        "time": time,
+                        "subject": subject,
+                        "link": self.driver.current_url
+                    })
+                self.driver.close()
+                self.driver.switch_to.window(self.driver.window_handles[0])
+
+            except:
+                self.logger.error('Error while get announcement file for company : ' + response.meta['code'])
 
             response.meta['json'][response.meta['code']]['annountcements'] = items;
 

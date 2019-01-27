@@ -205,6 +205,8 @@ class AnualSpider(scrapy.Spider):
 
             except:
                 self.logger.error('Error while get announcement file for company : ' + response.meta['code'])
+                self.driver.close()
+                self.driver.switch_to.window(self.driver.window_handles[0])
 
             response.meta['json'][response.meta['code']]['annountcements'] = items;
 
